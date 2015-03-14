@@ -1,0 +1,3 @@
+# use sudo playbook
+ansible-playbook --ask-sudo-pass <playbook>
+
