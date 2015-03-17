@@ -9,5 +9,6 @@
       apt: name=xvfb state=installed
       sudo: yes
 
-    - name: be sure xvfb bg setting is written
-      lineinfile: create=yes dest=~/.zprofile state=present regexp='^(\s*)Xvfb :1 -screen 0 1024x768x24 &$' line='Xvfb :1 -screen 0 1024x768x24 &'
+    - name: be sure xvfb profile
+      shell: echo 'Xvfb :1 -screen 0 1024x768x24 &' > /etc/profile.d/xvfb.sh creates=/etc/profile.d/xvfb.sh
+      sudo: yes
