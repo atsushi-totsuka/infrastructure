@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  vars_prompt:
+    - name: "project_name"
+      prompt: "Please enter project name"
+      default: "myapp"
+      private: no
+      confirm: no
+  tasks:
+    - shell: rails new {{ project_name }} --skip-bundle --skip-turbolinks
+
+    - lineinfile: >-
+        dest="./{{ project_name }}/Gemfile"
+        regexp="{{ item.regexp }}"
+        line="{{ item.line }}"
+      with_items:
+       - regexp: '^# gem ''therubyracer'', platforms: :ruby'
+         line: 'gem ''therubyracer'', platforms: :ruby'
+
+    - lineinfile: >
+        dest="./{{ project_name }}/Gemfile"
+        line="gem '{{ item }}'"
+      with_items:
+       - less-rails
+       - twitter-bootstrap-rails
+
+    - shell: bundle install --path vendor/bundle chdir="./{{ project_name }}"
+    - shell: bundle exec rails generate bootstrap:install less chdir="./{{ project_name }}"
+    - shell: bundle exec rails generate bootstrap:install static chdir="./{{ project_name }}"
+    - file: dest="./{{ project_name }}/app/views/layouts/application.html.erb" state=absent
+    - shell: bundle exec rails g bootstrap:layout chdir="./{{ project_name }}"
